@@ -1,0 +1,90 @@
+{$MACRO ON}
+
+{$define AL:=GOTO}
+{$define ALIE:=ELSE}
+{$define ARO:=SET}
+{$define AUX:=OR}
+{$define DOSIERO:=FILE}
+{$define DUM:=WHILE}
+{$define EL:=OF}
+{$define EN:=IN}
+{$define FARU:=DO}
+{$define FINO:=END}
+{$define FUNKCIO:=FUNCTION}
+{$define KAJ:=AND}
+{$define KONST:=CONST}
+{$define MARKO:=LABEL}
+{$define MARKOJ:=LABEL}
+{$define NE:=NOT}
+{$define NUL:=NIL}
+{$define OKAZO:=CASE}
+{$define PAKITA:=PACKED}
+{$define POR:=FOR}
+{$define PROCEDURO:=PROCEDURE}
+{$define PROGRAMO:=PROGRAM}
+{$define RIKORDO:=RECORD}
+{$define RIPETU:=REPEAT}
+{$define SE:=IF}
+{$define STARTO:=BEGIN}
+{$define SUBE:=DOWNTO}
+{$define SUPER:=WITH}
+{$define SUPRE:=TO}
+{$define TABELO:=ARRAY}
+{$define TIAM:=THEN}
+{$define TIPO:=TYPE}
+{$define TIPOJ:=TYPE}
+{$define GXIS:=UNTIL}
+{$define UZAS:=USES}
+
+{$define ant:=Pred}
+{$define Bulea:=Boolean}
+{$define Buleaj:=Boolean}
+{$define dauxrigota:=forward}
+{$define detruu:=Dispose}
+{$define doFin:=Eof}
+{$define eksp:=Exp}
+{$define eligo:=Output}
+{$define enigo:=Input}
+{$define entjera:=Integer}
+{$define entjeraj:=Integer}
+{$define hejmen:=Reset}
+{$define kos:=Cos}
+{$define kreu:=New}
+{$define kvad:=Sqr}
+{$define legu:=Read}
+{$define leguLin:=Readln}
+{$define liFin:=Eoln}
+{$define maksEnt:=MaxInt}
+{$define malpaku:=Unpack}
+{$define malvero:=False}
+{$define metu:=Put}
+{$define nepara:=Odd}
+{$define nro:=Ord}
+{$define pagxo:=Page}
+{$define paku:=Pack}
+{$define prenu:=Get}
+{$define rad:=Sqrt}
+{$define reela:=Real}
+{$define reelaj:=Real}
+{$define reskribu:=Rewrite}
+{$define ronde:=Round}
+{$define sek:=Succ}
+{$define sgn:=Chr}
+{$define signa:=Char}
+{$define signaj:=Char}
+{$define skribu:=Write}
+{$define skribuLin:=Writeln}
+{$define tanArk:=ArcTan}
+{$define teksta:=Text}
+{$define tekstaj:=Text}
+{$define trunk:=Trunc}
+{$define vero:=True}
+
+(*
+Abs 	abs
+Ln 	ln
+Sin 	sin
+div:=div
+mod:=mod
+var:=var
+*)

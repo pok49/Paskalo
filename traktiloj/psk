@@ -1,0 +1,94 @@
+#!/usr/bin/env perl
+use strict;
+use warnings;
+use utf8;  # ← source file contains UTF-8 literals (ĉ, ŭ, ŝ)
+use open ':std', ':encoding(UTF-8)';
+use Getopt::Std;
+our ($opt_A, $opt_o, $opt_3, $opt_h);
+
+getopts('o:A3h') or die usage();
+if ($opt_h) {
+    print usage();
+    exit 0;
+}
+
+use Encode qw(:fallbacks);
+use PerlIO::encoding;
+$PerlIO::encoding::fallback = Encode::FB_DEFAULT;  # → '?'
+
+getopts('o:A');
+my $infile = shift @ARGV;
+$infile //= '-';
+#====== read input:
+my $in_fh;
+if ($infile ne '-') {
+#    open my $in, '<:encoding(UTF-8)', $infile or die "Fiaskis malfermo de '$infile': $!\n";
+    open my $in, '<', $infile or die "Fiaskis malfermo de '$infile': $!\n";
+    binmode($in, ':raw:encoding(iso-8859-3)') if $infile =~ /\bl3\b/i;
+    $in_fh = $in;
+} else {
+    $in_fh = \*STDIN;
+}
+local $/;
+my $text = <$in_fh>;
+# ... the substitutions: ...
+# prepend & to aux, do, to ...:
+$text =~ s/(?:'(?:[^']|'')*'|(?<!:)\{[^}]*\})(*SKIP)(*F)|(?<!&)\b(aux|do|to)\b/&$1/gi;
+
+my %map = ("\x{108}" => 'CX', "\x{124}" => 'HX', "\x{11C}" => 'GX',
+           "\x{134}" => 'JX', "\x{15C}" => 'SX', "\x{16C}" => 'UX',
+           "\x{109}" => 'cx', "\x{125}" => 'hx', "\x{11D}" => 'gx',
+           "\x{135}" => 'jx', "\x{15D}" => 'sx', "\x{16D}" => 'ux',
+           "\x{2264}" =>'<=', "\x{2265}"=> '>=',  "\x{2260}"=>'<>',
+           "\x{2191}" =>'^');
+my $keys = join '|', map { quotemeta }
+    sort { length $b <=> length $a } keys %map;
+$text =~ s/(?:'(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*"|{(?:[^}\\]|\\.)*})(*SKIP)(*F)|($keys)/$map{$1}/gu;
+
+$text =~ s/(?:\{[^}]*\})(*SKIP)(*F)|\b(PROGRAMO)\b/\{\$INCLUDE 'makrooj.inc'\} $1/i;
+if ($opt_3) {
+    $text =~ s/(?:\} PROGRAMO\b)(?: |\{[^}]*\})*(*SKIP)(*F)|;/; UZAS cp8859_3;/i;
+}
+if ($opt_A) {
+    my $outfile = $opt_o // '-';
+    my $out_fh;
+    if ($outfile ne '-') {
+        open my $out, '>', $outfile or die "Fiaskis malfermo de '$outfile': $!\n";
+        binmode($out, ':raw:encoding(iso-8859-3)') if $opt_3;
+        $out_fh = $out;
+    } else {
+        $out_fh = \*STDOUT;
+    }
+    print $out_fh $text;
+    close $out_fh or die "La fermo fiaskis: $!\n" if $outfile ne '-';
+} else {
+    my $inc_dir = "$ENV{HOME}/.local/share/psk";
+    if ($opt_3) {
+        $ENV{LC_ALL} = 'eo';
+        
+    } else {
+        $ENV{LC_ALL} = 'eo.utf-8';
+
+        open my $pipe, '|-', 'ifpc', "-I$inc_dir", @ARGV, '--' or die "Malsukcesis lanĉi fpc / Can't spawn fpc: $!\n";
+        print $pipe $text;
+        close $pipe or die "fpc exited with status $?\n";
+    }
+}
+sub usage {
+    return <<'EOF';
+Uzmaniero: psk [opcioj] <enigo>
+Usage: psk [options] <input>
+
+Opcioj -- Options:
+  -A          Nur antaŭtraktu (askiigu por ifpc). Eligu al dosiero/dukto
+              Preprocess only (output to file/stdout)
+  -o DOSIERO  DSIERO por eligo (kun -A, defaŭlte: la dukto stdout)
+              Output file (with -A, default: stdout)
+  -h          Eligu ĉi tiun helpon / Show this help
+
+Sen -A, la askiigita programo estas dukte transigota al ifpc kun la
+ceteraj argumentoj.
+Without -A, preprocessed output is piped to ifpc with remaining args.
+EOF
+}
+

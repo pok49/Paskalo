@@ -1,0 +1,9 @@
+PROGRAMO sekva_signo;
+  VAR s: Signa;
+STARTO
+  RIPETU
+    Skribu('Tajpu signon: '); LeguLin(s);
+    skribuLin('La sekva signo estas: ', Sek(s));
+  ĜIS s = '.';
+  SkribuLin('Ĝis revido!');  
+FINO.

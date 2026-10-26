@@ -22,7 +22,6 @@ $infile //= '-';
 #====== read input:
 my $in_fh;
 if ($infile ne '-') {
-#    open my $in, '<:encoding(UTF-8)', $infile or die "Fiaskis malfermo de '$infile': $!\n";
     open my $in, '<', $infile or die "Fiaskis malfermo de '$infile': $!\n";
     binmode($in, ':raw:encoding(iso-8859-3)') if $infile =~ /\bl3\b/i;
     $in_fh = $in;
@@ -49,46 +48,59 @@ $text =~ s/(?:\{[^}]*\})(*SKIP)(*F)|\b(PROGRAMO)\b/\{\$INCLUDE 'makrooj.inc'\} $
 if ($opt_3) {
     $text =~ s/(?:\} PROGRAMO\b)(?: |\{[^}]*\})*(*SKIP)(*F)|;/; UZAS cp8859_3;/i;
 }
-if ($opt_A) {
-    my $outfile = $opt_o // '-';
-    my $out_fh;
-    if ($outfile ne '-') {
-        open my $out, '>', $outfile or die "Fiaskis malfermo de '$outfile': $!\n";
-        binmode($out, ':raw:encoding(iso-8859-3)') if $opt_3;
-        $out_fh = $out;
-    } else {
-        $out_fh = \*STDOUT;
-    }
-    print $out_fh $text;
-    close $out_fh or die "La fermo fiaskis: $!\n" if $outfile ne '-';
-} else {
-    my $inc_dir = "$ENV{HOME}/.local/share/psk";
-    if ($opt_3) {
-        $ENV{LC_ALL} = 'eo';
-        
-    } else {
-        $ENV{LC_ALL} = 'eo.utf-8';
-
-        open my $pipe, '|-', 'ifpc', "-I$inc_dir", @ARGV, '--' or die "Malsukcesis lanĉi fpc / Can't spawn fpc: $!\n";
-        print $pipe $text;
-        close $pipe or die "fpc exited with status $?\n";
-    }
+#Pri $outfile:
+my $outfile;
+if ($opt_o) { $outfile = $opt_o; }
+elsif ($opt_A) { $outfile = '-' }
+else {
+    use File::Basename;
+    $outfile = basename($infile);
+    $outfile =~ s/\.[^.]+$/.pas/;
+    $outfile = 'l3-' . $outfile if ($opt_3);
+    $outfile = '/tmp/' . $outfile;
 }
+# Now let's print $text:
+my $out_fh;
+if ($outfile ne '-') {
+    open my $out, '>', $outfile or die "Fiaskis malfermo de '$outfile': $!\n";
+    binmode($out, ':raw:encoding(iso-8859-3)') if $opt_3;
+    $out_fh = $out;
+} else {
+    $out_fh = \*STDOUT;
+}
+print $out_fh $text;
+close $out_fh or die "La fermo fiaskis: $!\n" if $outfile ne '-';
+exit if $opt_A;
+# The ifpc invocation:
+my $inc_dir = "$ENV{HOME}/.local/share/psk";
+my $filtrilo = '';
+if ($opt_3) {
+    $ENV{LC_ALL} = 'eo'; # Now luit shall filter between UTF-8 and Latin-3
+    $filtrilo = "luit -encoding 'ISO 8859-3'";
+# -encoding is redundant if the locale ‹eo› is installed. But it may not be installed.
+} else {
+    $ENV{LC_ALL} = 'eo.utf-8';
+}
+exec("$filtrilo ifpc -I$inc_dir @ARGV $outfile")
+    or die "ifpc fiaskis / ifpc failed: $!";
+#-------------
 sub usage {
     return <<'EOF';
 Uzmaniero: psk [opcioj] <enigo>
 Usage: psk [options] <input>
 
 Opcioj -- Options:
-  -A          Nur antaŭtraktu (askiigu por ifpc). Eligu al dosiero/dukto
-              Preprocess only (output to file/stdout)
-  -o DOSIERO  DSIERO por eligo (kun -A, defaŭlte: la dukto stdout)
-              Output file (with -A, default: stdout)
+  -3          Traduku en la Latinon-3an (kaj rulu en tiu kodo se -A malestas).
+              Preprocess to Latin-3 (and use it at run time if -A is absent).
+  -A          Nur antaŭtraktu (askiigu por ifpc). Sen -o, eligu al dosiero/dukto
+              Preprocess only (without -o output to file/stdout)
+  -o DOSIERO  DOSIERO por la antaŭtraktila eligo; ne plu traktu nek rulu.
+              DOSIERO file for the preprocessor output; no compilation, no run.
   -h          Eligu ĉi tiun helpon / Show this help
 
-Sen -A, la askiigita programo estas dukte transigota al ifpc kun la
+Sen -A, la askiigita programo estas transigota al ifpc kun la
 ceteraj argumentoj.
-Without -A, preprocessed output is piped to ifpc with remaining args.
+Without -A, preprocessed output is submitted to ifpc with remaining args.
 EOF
 }
 

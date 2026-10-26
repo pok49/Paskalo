@@ -1,0 +1,15 @@
+PROGRAMO Signaro; {Eligu la signojn Sgn($80) .. Sgn($FF) de la Latina-3ª}
+KONST unua = 160; lasta = 255;  {aŭ la samo 16-ume: 160 = $A0, 255 = $FF}
+TIPO signonumeroj = unua .. lasta;
+VAR s: Entjera;
+    nedifinitaj: ARO EL signonumeroj; {la vakaj pozicioj de Latino-3ª}
+STARTO
+  SkribuLin('=== Eĥoŝanĝo ĉiuĵaŭde en Latino-3ª ===');
+  nedifinitaj := [$A5, $AE, $BE, $C3, $D0, $E3, $F0];
+  POR s := unua SUPRE lasta FARU STARTO
+    Skribu(' ');    
+    SE s EN nedifinitaj TIAM Skribu('#')
+    ALIE Skribu(Sgn(s));
+    SE s MOD 16 = 15 TIAM SkribuLin;
+  FINO;
+FINO.

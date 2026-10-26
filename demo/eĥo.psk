@@ -1,0 +1,9 @@
+PROGRAMO eĥoŝanĝo;
+  TIPOJ semajntago = (lu, ma, me, ĵa, ve, sa, di);
+        rref = ↑reela; {la sago in ↑T estas askiigata per ĉapelo: ^T}
+  VAR   hodiaŭ : semajntago; aux: Bulea;
+STARTO
+  aux := (1 ≠ 2) AŬ vero;  { tio iĝos: &aux := (1 <> 2) AUX vero }
+  hodiaŭ := ĵa;
+  skribuLin('Eĥoŝanĝo ĉiuĵaŭde, hodiaŭ estas ', hodiaŭ);
+FINO.

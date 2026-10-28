@@ -1,24 +1,24 @@
 PROGRAMO Erato;  { La Eratostena kribrilo en Paskalo: }
 KONST n = 100; {-- ŝanĝu laŭbezone ĉi tiun supran intervalan limon}
 VAR prima: TABELO [1 .. n] EL Bulea; 
-    baro, i, j: entjera; 
+    baro, i, j: Entjera; 
 STARTO 
-  baro := trunk(rad(n));            {-- supra baro por la analizo} 
-  POR i := 2 SUPRE n FARU prima[i] := vero;    {-- komencvalorizo} 
-  prima[1] := malvero;                          {-- "forstreku" 1} 
+  baro := Trunk(√(n));           {-- supra baro por la analizo} 
+  POR i := 2 SUPRE n FARU prima[i] := Vero; {-- komencvalorizo} 
+  prima[1] := Malvero;                       {-- "forstreku" 1} 
   POR i := 2 SUPRE baro FARU 
     SE prima[i] TIAM STARTO 
       j := i + i; 
       DUM j ≤ n FARU STARTO 
-        prima[j] := malvero; 
+        prima[j] := Malvero; 
         j := j + i; 
       FINO; 
     FINO;
   j := 0;
   POR i := 1 SUPRE n FARU
     SE prima[i] TIAM STARTO
-      skribu(i, ' '); j := sek(j);
-      SE j MOD 15 = 0 TIAM skribuLin;
+      Skribu(i, ' '); j := Sek(j);
+      SE j MOD 15 = 0 TIAM SkribuLin;
     FINO;
-  skribuLin;
-FINO. 
+  SkribuLin;
+FINO.
